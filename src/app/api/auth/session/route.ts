@@ -1,23 +1,15 @@
-import { getSession } from '@/lib/auth';
-import { getUserProfile } from '@/services/auth.service';
-import { apiSuccess, apiError } from '@/lib/response';
+import { NextRequest } from 'next/server';
+import { authenticateRequest } from '@/middleware/auth';
+import { getUserSessionProfile } from '@/services/auth.service';
+import { apiSuccess, apiError } from '@/utils/response';
 
-export async function GET() {
-  const session = await getSession();
-  if (!session) {
+export async function GET(req: NextRequest) {
+  try {
+    const session = await authenticateRequest(req);
+    const profile = await getUserSessionProfile(session.userId);
+    return apiSuccess({ session, profile });
+  } catch {
     return apiError('UNAUTHENTICATED', 'No active session found', 401);
   }
-
-  try {
-    const user = await getUserProfile(session.userId);
-    return apiSuccess({
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      addresses: user.addresses,
-    });
-  } catch {
-    return apiError('USER_NOT_FOUND', 'Session user could not be found', 404);
-  }
 }
+

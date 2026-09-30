@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
-import { getProductBySlugOrId } from '@/services/product.service';
-import { apiSuccess, apiError } from '@/lib/response';
+import { getProduct } from '@/services/product.service';
+import { apiSuccess, apiError } from '@/utils/response';
 
 export async function GET(
   req: NextRequest,
@@ -8,9 +8,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const product = await getProductBySlugOrId(id);
+    const product = await getProduct(id);
     return apiSuccess(product);
-  } catch (err: any) {
-    return apiError('PRODUCT_NOT_FOUND', err.message, 404);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Product not found';
+    return apiError('NOT_FOUND', message, 404);
   }
 }
+

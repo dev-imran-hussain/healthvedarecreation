@@ -17,3 +17,4 @@ export const createCouponSchema = z.object({
   expiresAt: z.coerce.date(),
   isActive: z.boolean().default(true),
 });
+

@@ -4,6 +4,8 @@ import { Order } from '@/models/Order';
 import { Payment } from '@/models/Payment';
 import { Product } from '@/models/Product';
 import { verifyRazorpaySignature } from '@/lib/razorpay';
+import { sendOrderConfirmationEmail } from '@/lib/email';
+import { AppError, NotFoundError } from '@/utils/errors';
 
 export async function verifyAndCompletePayment(data: {
   orderId: string;
@@ -14,22 +16,24 @@ export async function verifyAndCompletePayment(data: {
   await connectDB();
 
   const order = await Order.findById(data.orderId);
-  if (!order) throw new Error('Order not found');
+  if (!order) throw new NotFoundError('Order not found');
 
   if (order.paymentStatus === 'PAID') {
-    return { success: true, message: 'Payment already processed' };
+    return { success: true, message: 'Payment already processed', orderNumber: order.orderNumber };
   }
 
   // Verify HMAC SHA256 Signature
   const isMock = data.razorpayOrderId.startsWith('order_mock_');
-  const isValid = isMock || verifyRazorpaySignature(
-    data.razorpayOrderId,
-    data.razorpayPaymentId,
-    data.razorpaySignature
-  );
+  const isValid =
+    isMock ||
+    verifyRazorpaySignature(
+      data.razorpayOrderId,
+      data.razorpayPaymentId,
+      data.razorpaySignature
+    );
 
   if (!isValid) {
-    throw new Error('Payment signature verification failed');
+    throw new AppError('Payment signature verification failed', 400, 'INVALID_SIGNATURE');
   }
 
   // Create payment record
@@ -46,7 +50,7 @@ export async function verifyAndCompletePayment(data: {
     webhookProcessed: false,
   });
 
-  // Atomic Stock Decrement (Section 32)
+  // Atomic Stock Decrement (Section 80)
   for (const item of order.items) {
     await Product.updateOne(
       { _id: item.productId, stock: { $gte: item.quantity } },
@@ -59,6 +63,11 @@ export async function verifyAndCompletePayment(data: {
   order.orderStatus = 'PAID';
   order.paymentId = payment._id as mongoose.Types.ObjectId;
   await order.save();
+
+  // Send Order Confirmation Email
+  if (order.guestEmail) {
+    sendOrderConfirmationEmail(order.guestEmail, order.orderNumber, order.total / 100);
+  }
 
   return {
     success: true,
@@ -82,7 +91,7 @@ export async function processWebhookEvent(event: {
 }) {
   await connectDB();
 
-  // Webhook Idempotency Check (Section 35)
+  // Webhook Idempotency Check (Section 34, 82)
   const existing = await Payment.findOne({
     gatewayPaymentId: event.payload.payment.entity.id,
     webhookProcessed: true,
@@ -95,6 +104,7 @@ export async function processWebhookEvent(event: {
   if (event.event === 'payment.captured') {
     const rzpOrderId = event.payload.payment.entity.order_id;
     const order = await Order.findOne({ razorpayOrderId: rzpOrderId });
+
     if (order && order.paymentStatus !== 'PAID') {
       order.paymentStatus = 'PAID';
       order.orderStatus = 'PAID';
@@ -105,8 +115,17 @@ export async function processWebhookEvent(event: {
         { webhookProcessed: true, status: 'SUCCESS' },
         { upsert: true }
       );
+
+      // Decrement stock atomically
+      for (const item of order.items) {
+        await Product.updateOne(
+          { _id: item.productId, stock: { $gte: item.quantity } },
+          { $inc: { stock: -item.quantity } }
+        );
+      }
     }
   }
 
   return { status: 'processed' };
 }
+

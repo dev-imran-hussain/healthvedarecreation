@@ -32,173 +32,149 @@ async function seed() {
   }
   console.log(`✅ Upserted ${categoryMap.size} categories.`);
 
-  // 2. Seed 8 Products (Minor units paise)
+  // 2. Seed Catalog Products (Minor units paise, Section 15, displayOrder)
   const products = [
     {
       name: 'Calcium Magnesium Zinc + Plant Vitamin D3',
       slug: 'calcium-magnesium-zinc-vitamin-d3',
       sku: 'HVO-CMZ-60T',
-      category: categoryMap.get('bone-joint-health'),
+      categoryId: categoryMap.get('bone-joint-health'),
       shortDescription: 'Bioavailable Calcium Citrate Malate with Lichen D3, K2-7, and Hadjod extract.',
       description: 'Comprehensive bone matrix formula engineered for high bioavailability with zero animal by-products.',
       price: 49900,
       compareAtPrice: 79900,
       stock: 250,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/01.CalciumMagnesiummZinc_UpperListing_Slide01New.jpg',
-        'health-veda-organics-vegan-products-be-vegan.assets/02.CalciumMagnesiummZinc_UpperListing_Slide02New.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/01.CalciumMagnesiummZinc_UpperListing_Slide01New.jpg' },
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/02.CalciumMagnesiummZinc_UpperListing_Slide02New.jpg' }
       ],
-      tags: ['calcium', 'magnesium', 'zinc', 'vitamin d3', 'k2-7', 'hadjod', 'bone health'],
+      displayOrder: 1,
       isFeatured: true,
       isActive: true,
-      rating: 4.9,
-      reviewCount: 2110,
-      botanicalDetails: {
+      attributes: {
         botanicalName: 'Cissus Quadrangularis & Medicago Sativa',
-        plantPart: 'Aerial parts and extract',
-        extractionRatio: '10:1',
-      },
-      nutritionalFacts: [
-        { nutrient: 'Calcium Citrate Malate', amountPerServing: '500 mg', percentRDA: 50 },
-        { nutrient: 'Magnesium Glycinate', amountPerServing: '65 mg', percentRDA: 17.5 },
-        { nutrient: 'Hadjod (Cissus Quadrangularis)', amountPerServing: '100 mg' },
-        { nutrient: 'Zinc Citrate', amountPerServing: '13.2 mg', percentRDA: 100 },
-        { nutrient: 'Vitamin D3 (Lichen)', amountPerServing: '600 IU (15 mcg)', percentRDA: 100 },
-        { nutrient: 'Vitamin K2 (MK-7)', amountPerServing: '55 mcg', percentRDA: 100 },
-      ]
+        servingSize: '2 Tablets',
+        totalTablets: 60,
+      }
     },
     {
       name: 'Himalayan Shilajit Resin with 80% Fulvic Acid',
       slug: 'himalayan-shilajit-resin',
       sku: 'HVO-SHIL-20G',
-      category: categoryMap.get('vitality-stamina'),
+      categoryId: categoryMap.get('vitality-stamina'),
       shortDescription: 'Harvested at 18,000 ft in Himalayan ranges, rich in 84+ ionic trace minerals.',
       description: 'Purified golden-grade Himalayan Shilajit resin containing 80% bioactive fulvic acid for stamina and cellular vitality.',
       price: 99900,
       compareAtPrice: 149900,
       stock: 180,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/ListingShilajitResinSlide01Update.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/ListingShilajitResinSlide01Update.jpg' }
       ],
-      tags: ['shilajit', 'fulvic acid', 'stamina', 'energy', 'vitality'],
+      displayOrder: 2,
       isFeatured: true,
       isActive: true,
-      rating: 4.9,
-      reviewCount: 1480,
     },
     {
       name: 'Chelated Magnesium Glycinate 100% Vegan',
       slug: 'chelated-magnesium-glycinate',
       sku: 'HVO-MAG-60C',
-      category: categoryMap.get('sleep-relaxation'),
+      categoryId: categoryMap.get('sleep-relaxation'),
       shortDescription: 'High-absorption bisglycinate for restful sleep and nocturnal muscle relaxation.',
       description: 'Gentle on digestion, chelated magnesium supports neuro-calmness and healthy sleep cycles.',
       price: 62900,
       compareAtPrice: 99900,
       stock: 310,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/Listing_Magnesium_Glycinate_Slide_01_WC.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/Listing_Magnesium_Glycinate_Slide_01_WC.jpg' }
       ],
-      tags: ['magnesium', 'glycinate', 'sleep', 'muscle relaxation'],
+      displayOrder: 3,
       isFeatured: true,
       isActive: true,
-      rating: 4.8,
-      reviewCount: 640,
     },
     {
       name: 'Wild Himalayan Sea Buckthorn Capsules',
       slug: 'wild-himalayan-sea-buckthorn',
       sku: 'HVO-SBT-60C',
-      category: categoryMap.get('skin-glow-beauty'),
+      categoryId: categoryMap.get('skin-glow-beauty'),
       shortDescription: 'Rare plant source of Omegas 3, 6, 7 & 9 for skin moisture and barrier repair.',
       description: 'Cold-pressed berries from high-altitude Himalayas provide complete essential fatty acid spectrum.',
       price: 54900,
       compareAtPrice: 89900,
       stock: 140,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/Listing_Sea_Buckthorn_Slide_01_New_1_1.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/Listing_Sea_Buckthorn_Slide_01_New_1_1.jpg' }
       ],
-      tags: ['sea buckthorn', 'omega 7', 'skin glow', 'antioxidants'],
+      displayOrder: 4,
       isFeatured: true,
       isActive: true,
-      rating: 4.9,
-      reviewCount: 820,
     },
     {
       name: 'Plant-Based Glutathione Builder with ALA',
       slug: 'glutathione-builder-ala',
       sku: 'HVO-GLU-60C',
-      category: categoryMap.get('skin-glow-beauty'),
+      categoryId: categoryMap.get('skin-glow-beauty'),
       shortDescription: 'Cellular precursor complex with ALA and Vitamin C for luminous skin radiance.',
       description: 'Potent master antioxidant builder that neutralizes free radicals and supports liver detox.',
       price: 74900,
       compareAtPrice: 129900,
       stock: 200,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/Listing_Glutathione_Builder_Slide_01.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/Listing_Glutathione_Builder_Slide_01.jpg' }
       ],
-      tags: ['glutathione', 'skin radiance', 'antioxidant', 'ala'],
+      displayOrder: 5,
       isFeatured: true,
       isActive: true,
-      rating: 4.9,
-      reviewCount: 950,
     },
     {
       name: 'Plant-Based PCOS Care & Hormonal Balance',
       slug: 'plant-based-pcos-care',
       sku: 'HVO-PCOS-60T',
-      category: categoryMap.get('women-wellness'),
+      categoryId: categoryMap.get('women-wellness'),
       shortDescription: 'Myo-Inositol & D-Chiro-Inositol in 40:1 ratio with Shatavari & Kanchnar.',
       description: 'Clinically formulated to support regular menstrual cycles, metabolic health, and clear skin.',
       price: 69900,
       compareAtPrice: 119900,
       stock: 220,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/a._Listing_PCOS_Slide_01_New.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/a._Listing_PCOS_Slide_01_New.jpg' }
       ],
-      tags: ['pcos', 'hormonal balance', 'myo inositol', 'shatavari'],
+      displayOrder: 6,
       isFeatured: true,
       isActive: true,
-      rating: 4.8,
-      reviewCount: 1340,
     },
     {
       name: 'Plant-Derived Multi Digestive Enzymes',
       slug: 'digestive-enzymes-blend',
       sku: 'HVO-ENZ-60C',
-      category: categoryMap.get('digestive-health'),
+      categoryId: categoryMap.get('digestive-health'),
       shortDescription: 'Full-spectrum enzyme matrix: Amylase, Protease, Lipase & Lactase.',
       description: 'Relieves post-meal heaviness, gas, and supports complete vegetarian nutrient breakdown.',
       price: 44900,
       compareAtPrice: 74900,
       stock: 190,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/a._Listing_Digestive_Enzyme_Slide_01.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/a._Listing_Digestive_Enzyme_Slide_01.jpg' }
       ],
-      tags: ['digestive enzymes', 'gut health', 'bloating relief'],
+      displayOrder: 7,
       isFeatured: true,
       isActive: true,
-      rating: 4.8,
-      reviewCount: 730,
     },
     {
       name: 'Plant Iron + Bioactive Methylfolate & B12',
       slug: 'plant-iron-methylfolate-b12',
       sku: 'HVO-IRON-60T',
-      category: categoryMap.get('vitality-stamina'),
+      categoryId: categoryMap.get('vitality-stamina'),
       shortDescription: 'Non-constipating gentle plant iron with L-Methylfolate and active B12.',
       description: 'Gentle on stomach, restores red blood cell formation and combats fatigue.',
       price: 39900,
       compareAtPrice: 64900,
       stock: 260,
       images: [
-        'health-veda-organics-vegan-products-be-vegan.assets/Listing_Iron_Folic_Acid_Slide_01_New_WC.jpg'
+        { url: '/health-veda-organics-vegan-products-be-vegan.assets/Listing_Iron_Folic_Acid_Slide_01_New_WC.jpg' }
       ],
-      tags: ['iron', 'folic acid', 'b12', 'energy'],
+      displayOrder: 8,
       isFeatured: true,
       isActive: true,
-      rating: 4.7,
-      reviewCount: 510,
     }
   ];
 
@@ -209,7 +185,7 @@ async function seed() {
       { upsert: true, new: true }
     );
   }
-  console.log(`✅ Upserted ${products.length} catalog products.`);
+  console.log(`✅ Upserted ${products.length} catalog products with lean schema.`);
 
   // 3. Seed Admin User
   const adminEmail = 'admin@healthvedaorganics.com';
@@ -222,6 +198,8 @@ async function seed() {
       email: adminEmail,
       passwordHash,
       role: 'admin',
+      isActive: true,
+      emailVerified: true,
     },
     { upsert: true }
   );
@@ -254,3 +232,4 @@ seed().catch(err => {
   console.error('❌ Seeder error:', err);
   process.exit(1);
 });
+

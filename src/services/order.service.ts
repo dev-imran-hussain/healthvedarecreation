@@ -1,152 +1,145 @@
 import mongoose from 'mongoose';
 import { connectDB } from '@/lib/db';
+import { Order, IOrder, IShippingAddressSnapshot } from '@/models/Order';
 import { Product } from '@/models/Product';
-import { Order, IOrderItemSnapshot, OrderStatus } from '@/models/Order';
-import { Payment } from '@/models/Payment';
-import { validateAndApplyCoupon } from './coupon.service';
-import { razorpay } from '@/lib/razorpay';
+import { validateAndCalculateCheckout, CheckoutCalculationItem } from './checkout.service';
+import { createRazorpayOrder } from '@/lib/razorpay';
+import { OrderStatus } from '@/types/order';
+import { NotFoundError, ForbiddenError, AppError } from '@/utils/errors';
+import { sendOrderConfirmationEmail } from '@/lib/email';
 
-export async function createCheckoutOrder(data: {
+export async function createOrder(data: {
   userId?: string;
   guestEmail?: string;
-  items: { productId: string; quantity: number }[];
-  shippingAddress: {
-    fullName: string;
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    phone: string;
-  };
+  items: CheckoutCalculationItem[];
+  shippingAddress: IShippingAddressSnapshot;
   couponCode?: string;
-  gateway: 'RAZORPAY' | 'COD';
-}) {
+  gateway?: 'RAZORPAY' | 'COD';
+}): Promise<{ order: IOrder; razorpayOrder?: { id: string; amount: number; currency: string } }> {
   await connectDB();
 
-  // 1. Fetch current live products from DB (Never trust client prices)
-  const productIds = data.items.map((i) => i.productId);
-  const products = await Product.find({ _id: { $in: productIds }, isActive: true });
+  // 1. Authoritative server price and stock calculation
+  const calc = await validateAndCalculateCheckout(data.items, data.couponCode);
 
-  if (products.length !== data.items.length) {
-    throw new Error('One or more products in your cart are no longer available');
-  }
-
-  // 2. Validate stock and build historical snapshot
-  const itemSnapshots: IOrderItemSnapshot[] = [];
-  let subtotal = 0;
-
-  for (const item of data.items) {
-    const product = products.find((p) => p._id.toString() === item.productId);
-    if (!product) throw new Error('Product not found');
-
-    if (product.stock < item.quantity) {
-      throw new Error(`Insufficient stock for "${product.name}". Only ${product.stock} left.`);
-    }
-
-    const unitPrice = product.price; // in paise
-    const lineTotal = unitPrice * item.quantity;
-    subtotal += lineTotal;
-
-    itemSnapshots.push({
-      productId: product._id as mongoose.Types.ObjectId,
-      nameSnapshot: product.name,
-      skuSnapshot: product.sku,
-      imageSnapshot: product.images[0] || '',
-      unitPrice,
-      quantity: item.quantity,
-      lineTotal,
-    });
-  }
-
-  // 3. Discount calculation
-  let discount = 0;
-  if (data.couponCode) {
-    const couponResult = await validateAndApplyCoupon(data.couponCode, subtotal, data.userId);
-    discount = couponResult.discount;
-  }
-
-  // 4. Free Shipping threshold calculation: Free if subtotal >= ₹499 (49900 paise)
-  const shippingFee = subtotal >= 49900 ? 0 : 5000; // ₹50 shipping if under ₹499
-  const tax = 0; // Inclusive tax
-  const total = subtotal - discount + shippingFee + tax;
-
-  // 5. Generate human-readable Order Number (Section 64)
+  // 2. Generate unique order number (HVO-YYYY-XXXXXX)
+  const year = new Date().getFullYear();
   const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-  const orderNumber = `HVO-${new Date().getFullYear()}-${randomSuffix}`;
+  const orderNumber = `HVO-${year}-${randomSuffix}`;
 
-  // 6. Create Razorpay order if gateway is RAZORPAY
-  let razorpayOrderId: string | undefined = undefined;
-  if (data.gateway === 'RAZORPAY') {
-    try {
-      const rzpOrder = await razorpay.orders.create({
-        amount: total, // amount in paise
-        currency: 'INR',
-        receipt: orderNumber,
-      });
-      razorpayOrderId = rzpOrder.id;
-    } catch (err: any) {
-      console.warn('⚠️ Razorpay order creation notice (mocking for test):', err.message);
-      razorpayOrderId = `order_mock_${Date.now()}`;
-    }
+  // 3. Create Gateway Order if Razorpay
+  let razorpayOrderData: { id: string; amount: number; currency: string } | undefined;
+  if (data.gateway !== 'COD') {
+    razorpayOrderData = await createRazorpayOrder(calc.total, orderNumber);
   }
 
-  // 7. Persist Order
+  // 4. Persist Order with historical snapshots
   const order = await Order.create({
     orderNumber,
     userId: data.userId ? new mongoose.Types.ObjectId(data.userId) : undefined,
     guestEmail: data.guestEmail,
-    items: itemSnapshots,
-    shippingAddress: data.shippingAddress,
-    subtotal,
-    discount,
-    shippingFee,
-    tax,
-    total,
-    couponCode: data.couponCode,
-    paymentStatus: 'UNPAID',
+    items: calc.items,
+    shippingAddressSnapshot: data.shippingAddress,
+    subtotal: calc.subtotal,
+    discount: calc.discount,
+    shippingFee: calc.shippingFee,
+    tax: calc.tax,
+    total: calc.total,
+    couponCode: calc.couponCode,
+    paymentStatus: data.gateway === 'COD' ? 'PENDING' : 'PENDING',
     orderStatus: 'PENDING_PAYMENT',
-    razorpayOrderId,
+    razorpayOrderId: razorpayOrderData?.id,
   });
 
+  // If COD, dispatch confirmation immediately
+  if (data.gateway === 'COD' && data.guestEmail) {
+    sendOrderConfirmationEmail(data.guestEmail, orderNumber, calc.total / 100);
+  }
+
   return {
-    orderId: order._id.toString(),
-    orderNumber: order.orderNumber,
-    total: order.total,
-    currency: 'INR',
-    razorpayOrderId,
-    gateway: data.gateway,
+    order,
+    razorpayOrder: razorpayOrderData,
   };
 }
 
-export async function getUserOrders(userId: string) {
+export async function getOrder(
+  orderId: string,
+  userId?: string,
+  isAdmin = false
+): Promise<IOrder> {
   await connectDB();
-  return Order.find({ userId: new mongoose.Types.ObjectId(userId) })
-    .sort({ createdAt: -1 })
-    .lean();
-}
+  const query = mongoose.Types.ObjectId.isValid(orderId)
+    ? { _id: orderId }
+    : { orderNumber: orderId };
 
-export async function getOrderById(orderId: string, userId?: string) {
-  await connectDB();
-  const query: Record<string, unknown> = { _id: orderId };
-  if (userId) {
-    query.userId = new mongoose.Types.ObjectId(userId);
+  const order = await Order.findOne(query);
+  if (!order) throw new NotFoundError('Order not found');
+
+  // Object-level authorization (Section 47)
+  if (!isAdmin && userId && order.userId && !order.userId.equals(new mongoose.Types.ObjectId(userId))) {
+    throw new ForbiddenError('You are not authorized to view this order');
   }
-  const order = await Order.findOne(query).lean();
-  if (!order) throw new Error('Order not found');
+
   return order;
 }
 
-export async function updateOrderStatus(orderId: string, newStatus: OrderStatus) {
+export async function cancelOrder(
+  orderId: string,
+  userId: string,
+  reason: string
+): Promise<IOrder> {
   await connectDB();
   const order = await Order.findById(orderId);
-  if (!order) throw new Error('Order not found');
+  if (!order) throw new NotFoundError('Order not found');
 
-  // Validate state transitions (Section 36)
-  if (order.orderStatus === 'DELIVERED' && newStatus === 'PROCESSING') {
-    throw new Error('Invalid status transition');
+  // Section 38: Verify order ownership
+  if (!order.userId || !order.userId.equals(new mongoose.Types.ObjectId(userId))) {
+    throw new ForbiddenError('You are not authorized to cancel this order');
   }
 
-  order.orderStatus = newStatus;
+  // Only allowed if not shipped or delivered
+  if (['SHIPPED', 'DELIVERED', 'CANCELLED'].includes(order.orderStatus)) {
+    throw new AppError(`Cannot cancel an order in "${order.orderStatus}" state`, 400);
+  }
+
+  order.orderStatus = 'CANCELLED';
+  order.cancellation = {
+    reason,
+    cancelledAt: new Date(),
+    cancelledBy: 'CUSTOMER',
+  };
+  await order.save();
+
+  // Restore inventory
+  for (const item of order.items) {
+    await Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } });
+  }
+
+  return order;
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<IOrder> {
+  await connectDB();
+  const order = await Order.findById(orderId);
+  if (!order) throw new NotFoundError('Order not found');
+
+  order.orderStatus = status;
+  if (status === 'PAID') {
+    order.paymentStatus = 'PAID';
+  }
   await order.save();
   return order;
+}
+
+export async function getUserOrders(userId: string): Promise<IOrder[]> {
+  await connectDB();
+  return Order.find({ userId }).sort({ createdAt: -1 });
+}
+
+export async function getAdminOrders(status?: string): Promise<IOrder[]> {
+  await connectDB();
+  const query: Record<string, unknown> = {};
+  if (status && status !== 'all') {
+    query.orderStatus = status;
+  }
+  return Order.find(query).sort({ createdAt: -1 });
 }

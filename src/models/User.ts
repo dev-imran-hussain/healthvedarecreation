@@ -1,13 +1,15 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IUserAddress {
+  _id?: mongoose.Types.ObjectId;
   fullName: string;
-  street: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
   city: string;
   state: string;
-  postalCode: string;
+  pincode: string;
   country: string;
-  phone: string;
   isDefault?: boolean;
 }
 
@@ -27,12 +29,13 @@ export interface IUser extends Document {
 
 const AddressSchema = new Schema<IUserAddress>({
   fullName: { type: String, required: true },
-  street: { type: String, required: true },
+  phone: { type: String, required: true },
+  addressLine1: { type: String, required: true },
+  addressLine2: { type: String },
   city: { type: String, required: true },
   state: { type: String, required: true },
-  postalCode: { type: String, required: true },
+  pincode: { type: String, required: true },
   country: { type: String, default: 'India' },
-  phone: { type: String, required: true },
   isDefault: { type: Boolean, default: false },
 });
 
@@ -60,3 +63,4 @@ const UserSchema = new Schema<IUser>(
 
 export const User: Model<IUser> =
   mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+

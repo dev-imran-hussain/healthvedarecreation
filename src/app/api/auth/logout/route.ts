@@ -1,7 +1,8 @@
-import { logoutUser } from '@/services/auth.service';
-import { apiSuccess } from '@/lib/response';
+import { clearAuthCookie } from '@/lib/auth';
+import { apiSuccess } from '@/utils/response';
 
 export async function POST() {
-  await logoutUser();
+  await clearAuthCookie();
   return apiSuccess({ loggedOut: true }, 'Successfully logged out');
 }
+

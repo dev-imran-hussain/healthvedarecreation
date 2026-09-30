@@ -60,3 +60,4 @@ export async function clearAuthCookie() {
     maxAge: 0,
   });
 }
+

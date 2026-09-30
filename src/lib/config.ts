@@ -13,19 +13,21 @@ const envSchema = z.object({
   AUTH_COOKIE_NAME: z.string().default('hvo_session'),
   AUTH_TOKEN_EXPIRY: z.string().default('7d'),
   
-  // Redis (Optional, fallback provided)
-  REDIS_URL: z.string().optional(),
-  
   // Razorpay
   RAZORPAY_KEY_ID: z.string().default('rzp_test_mock_123456789'),
   RAZORPAY_KEY_SECRET: z.string().default('rzp_test_secret_mock_987654321'),
   RAZORPAY_WEBHOOK_SECRET: z.string().default('rzp_webhook_secret_mock_abc'),
   
-  // Cloudinary (Optional)
-  CLOUDINARY_CLOUD_NAME: z.string().optional(),
-  CLOUDINARY_API_KEY: z.string().optional(),
-  CLOUDINARY_API_SECRET: z.string().optional(),
+  // Cloudinary
+  CLOUDINARY_CLOUD_NAME: z.string().optional().default('healthveda'),
+  CLOUDINARY_API_KEY: z.string().optional().default('mock_api_key'),
+  CLOUDINARY_API_SECRET: z.string().optional().default('mock_api_secret'),
+  
+  // Email Provider
+  EMAIL_PROVIDER_API_KEY: z.string().optional().default('mock_email_key'),
+  EMAIL_FROM: z.string().email().default('orders@healthvedaorganics.com'),
 });
 
 export const config = envSchema.parse(process.env);
 export const env = config;
+
