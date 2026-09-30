@@ -1,0 +1,4 @@
+<svg class="circular-progress" height="8" width="8" viewBox="0 0 8 8" style="--stroke-dasharray: 20.420352248335" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50%" cy="50%" fill="none" stroke-width="1.5" r="3.25" stroke="currentColor" stroke-opacity="0.2"/>
+                <circle cx="50%" cy="50%" fill="none" stroke-width="1.5" r="3.25" stroke="currentColor" stroke-linecap="round"/>
+              </svg>

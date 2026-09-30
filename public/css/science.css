@@ -1,0 +1,329 @@
+/* ==========================================================================
+   SECTION 5: THE SCIENCE DEPTH & CLINICAL SUPPLEMENT FACTS
+   ========================================================================== */
+.science-depth-section {
+    padding: clamp(70px, 9vw, 120px) 0;
+    background: var(--green-deep);
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.science-depth-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(45, 106, 79, 0.25) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+}
+
+.science-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(3rem, 5vw, 6rem);
+    align-items: center;
+}
+
+.science-pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    margin: 2.5rem 0;
+}
+
+.pillar-item {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.pillar-icon {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--accent-copper);
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(166, 111, 91, 0.4);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(166, 111, 91, 0.08);
+}
+
+.pillar-content h4 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin-bottom: 0.35rem;
+}
+
+.pillar-content p {
+    font-size: 13.5px;
+    color: var(--text-light-muted);
+    line-height: 1.5;
+}
+
+.science-cta-wrap {
+    margin-top: 2rem;
+}
+
+.btn-copper {
+    display: inline-block;
+    background: var(--accent-copper);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.03em;
+}
+
+.btn-copper:hover {
+    background: #b87b66;
+    transform: translateY(-2px);
+}
+
+/* SUPPLEMENT INGREDIENTS FACTS CARD (Luxury Clinical Panel) */
+.supplement-facts-card {
+    background: rgba(13, 42, 34, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+    color: var(--text-primary);
+}
+
+.facts-header-banner {
+    padding: 1.75rem 2rem 1.25rem;
+    background: rgba(22, 60, 49, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.facts-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.facts-badge-kicker {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-copper);
+    margin-bottom: 3px;
+}
+
+.facts-title-main {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: #ffffff;
+    line-height: 1.15;
+}
+
+.facts-sub {
+    font-size: 12.5px;
+    color: var(--text-light-muted);
+    margin-top: 6px;
+}
+
+/* Product Info Bar */
+.facts-product-info-bar {
+    display: flex;
+    gap: 2rem;
+    background: rgba(10, 31, 25, 0.95);
+    padding: 12px 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+}
+
+.info-pill {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 2px;
+}
+
+.info-pill strong {
+    font-size: 13px;
+    color: var(--surface-light);
+    font-weight: 600;
+}
+
+/* Nutritional Table */
+.facts-table-container {
+    padding: 1.25rem 2rem 1.5rem;
+}
+
+.table-header-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.3fr 1fr 0.7fr;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-copper);
+    padding-bottom: 8px;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.2);
+}
+
+.table-body-scroll {
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.table-body-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.table-body-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.table-body-scroll::-webkit-scrollbar-thumb {
+    background: rgba(166, 111, 91, 0.6);
+    border-radius: 3px;
+}
+
+.table-body-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-copper);
+}
+
+.fact-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.3fr 1fr 0.7fr;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 13px;
+    transition: background 0.2s ease;
+}
+
+.fact-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.col-ing strong {
+    display: block;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.sub-detail {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 400;
+    margin-top: 1px;
+}
+
+.col-src {
+    font-size: 12.5px;
+    color: var(--text-light-muted);
+}
+
+.col-amt {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.col-rda {
+    text-align: right;
+}
+
+.rda-badge {
+    display: inline-block;
+    background: rgba(8, 124, 46, 0.25);
+    border: 1px solid rgba(8, 124, 46, 0.5);
+    color: #76e297;
+    padding: 2px 7px;
+    border-radius: var(--radius-xs);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.rda-badge.rda-100 {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: rgba(212, 175, 55, 0.6);
+    color: #ffd966;
+}
+
+.rda-established {
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+}
+
+.highlight-botanical em {
+    color: #a3e0b5;
+    font-style: italic;
+}
+
+.highlight-vegan .col-src {
+    color: #bbf2c8;
+}
+
+.facts-footnote {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 10px;
+    line-height: 1.45;
+}
+
+/* Usage Grid */
+.facts-usage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem 1.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.usage-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.usage-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.usage-box strong {
+    display: block;
+    font-size: 11.5px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.usage-box p {
+    font-size: 12.5px;
+    color: var(--text-light-muted);
+    line-height: 1.45;
+}
