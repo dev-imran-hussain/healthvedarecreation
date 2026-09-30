@@ -428,5 +428,34 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// --- 7. MOBILE NAVIGATION DRAWER SYSTEM ---
+const mobileMenuToggle = document.getElementById('mobile-nav-toggle');
+const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
+const mobileNavClose = document.getElementById('mobile-nav-close');
+const mobileNavBackdrop = document.getElementById('mobile-nav-backdrop');
+const mobileNavLinks = document.querySelectorAll('.mobile-nav-link, .mobile-shop-btn');
+
+function openMobileNav() {
+    mobileNavDrawer?.classList.add('open');
+    mobileNavDrawer?.setAttribute('aria-hidden', 'false');
+    mobileMenuToggle?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('mobile-nav-open');
+}
+
+function closeMobileNav() {
+    mobileNavDrawer?.classList.remove('open');
+    mobileNavDrawer?.setAttribute('aria-hidden', 'true');
+    mobileMenuToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('mobile-nav-open');
+}
+
+mobileMenuToggle?.addEventListener('click', openMobileNav);
+mobileNavClose?.addEventListener('click', closeMobileNav);
+mobileNavBackdrop?.addEventListener('click', closeMobileNav);
+
+mobileNavLinks.forEach(link => {
+    link.addEventListener('click', closeMobileNav);
+});
+
 // Initialize Cart on Load
 renderCart();
