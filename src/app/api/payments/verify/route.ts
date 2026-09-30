@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { verifyAndCompletePayment } from '@/services/payment.service';
-import { apiSuccess, apiError } from '@/lib/response';
+import { apiSuccess, apiError } from '@/utils/response';
 
 const verifySchema = z.object({
   orderId: z.string().min(1, 'Order ID is required'),

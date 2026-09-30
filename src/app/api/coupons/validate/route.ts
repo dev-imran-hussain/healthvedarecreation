@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { validateCouponSchema } from '@/validations/coupon.schema';
 import { validateAndApplyCoupon } from '@/services/coupon.service';
-import { apiSuccess, apiError } from '@/lib/response';
+import { apiSuccess, apiError } from '@/utils/response';
 
 export async function POST(req: NextRequest) {
   try {

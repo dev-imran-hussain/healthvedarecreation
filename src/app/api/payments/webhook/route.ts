@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import crypto from 'crypto';
 import { env } from '@/lib/config';
 import { processWebhookEvent } from '@/services/payment.service';
-import { apiSuccess, apiError } from '@/lib/response';
+import { apiSuccess, apiError } from '@/utils/response';
 
 export async function POST(req: NextRequest) {
   try {

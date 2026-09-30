@@ -1,19 +1,19 @@
 /* ==========================================================================
    HEALTH VEDA ORGANICS — NEXT.JS PRODUCTION CSS ENTRY
    ========================================================================== */
-@import '../../css/variables.css';
-@import '../../css/base.css';
-@import '../../css/header.css';
-@import '../../css/hero.css';
-@import '../../css/metrics.css';
-@import '../../css/categories.css';
-@import '../../css/products.css';
-@import '../../css/science.css';
-@import '../../css/founder.css';
-@import '../../css/certifications.css';
-@import '../../css/social-proof.css';
-@import '../../css/cart.css';
-@import '../../css/modal.css';
-@import '../../css/footer.css';
-@import '../../css/responsive.css';
+@import '../styles/variables.css';
+@import '../styles/base.css';
+@import '../styles/header.css';
+@import '../styles/hero.css';
+@import '../styles/metrics.css';
+@import '../styles/categories.css';
+@import '../styles/products.css';
+@import '../styles/science.css';
+@import '../styles/founder.css';
+@import '../styles/certifications.css';
+@import '../styles/social-proof.css';
+@import '../styles/cart.css';
+@import '../styles/modal.css';
+@import '../styles/footer.css';
+@import '../styles/responsive.css';
 
