@@ -1,0 +1,21 @@
+{
+  "name": "Health Veda Organics",
+  "short_name": "HealthVeda",
+  "description": "100% Plant-Based Certified Organic Health & Wellness Formulations",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0d2a22",
+  "theme_color": "#0d2a22",
+  "icons": [
+    {
+      "src": "health-veda-organics-vegan-products-be-vegan.assets/100__Plant-Based_Vegan.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "health-veda-organics-vegan-products-be-vegan.assets/100__Plant-Based_Vegan.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
